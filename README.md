@@ -126,7 +126,7 @@ First, a configuration JSON file must be defined to execute the script. This con
 
 In order to execute the experiment parallelism script we first need to start a ray.cluster with the required resources. If we are using a **single node** then we can type the following command with the given cpus and gpus.
 
-.```console
+```console
 ray start --head --num-cpus=20 --num-gpus=2
 ```
 Once the ray cluster is started, we can call our script with our configuration json file.
