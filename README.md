@@ -138,6 +138,7 @@ It is a good practice to shutdown the ray cluster when the work is done.
 
 ```console
 foo@bar:~$ ray stop
+```
 
 ### Multi-node Ray Cluster
 In our case we are using a cluster with 4 GPUs per node, so given n GPUs for n >= 4, we are using multi-node.
