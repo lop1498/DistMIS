@@ -30,8 +30,6 @@
 </p>
 
 <p align="center">
-  <a href="#quick-introduction">Quick Introduction </a> •
-  <a href="#setup">Setup</a> •
   <a href="#data-preparation">Data Preparation</a> •
   <a href="#parallelism-modes">Parallelism Modes</a>
 </p>
