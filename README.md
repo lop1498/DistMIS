@@ -51,7 +51,7 @@ First, a configuration JSON file must be defined to execute the script. This con
   > (int) Hyperparameter that defines the step size at each iteration while moving toward a minimum of a loss function.
 - epochs
   > (int) Number of epochs each model will train for.
-- verbose:
+- verbose
   >(int) Number of epochs each model will train for.
 - nodes
   >  (int) Number of nodes.
