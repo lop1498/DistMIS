@@ -38,7 +38,7 @@
 
 ## Parallelism Modes
 
-Additionally to the Tensorflow based open implementation of the Data and Experiment Parallelism design for Supercomputing environments, focused on Deep Learning for Image Segmentation, we have also provided an extension using Pytorch. In this addendum we provide the scripts and configurations needed to replicate the experimentation that has been done, comparing via 24 experiments the scalability of data and experiment parallelism with Pytorch.
+Additionally to the Tensorflow based open implementation of the Data and Experiment Parallelism design for Supercomputing environments, focused on Deep Learning for Image Segmentation, we have also provided an extension using Pytorch. In this addendum we provide the scripts and configurations needed to replicate the experimentation that has been done, comparing via N experiments the scalability of data and experiment parallelism with Pytorch.
 
 ### Data Parallelism
 
@@ -79,7 +79,7 @@ If we are using **multi node**, we first need to initialize ray with a more comp
 
 ### Experiment Parallelism
 
-Similarly to the Experiment Parallelism approach presented in Tensorflow, we used the ray.tune library for experiment execution and hyperparameter tuning at any scale. Given an object *trainable* and the number of *samples* (experiments) that we want to make, the function **tune.run** executes the hyperparameter tuning. This function manages the experiment and provides many features such as logging, checkpointing, and early stopping. As happens in Data Parallelism, in a multinode environment we have to deal with more complex ray initializations, so the bash script gets harder to deal with (refer to Multi-node Ray Cluster](#multi-node-ray-cluster)). However, Experiment Parallelism with Ray.tune in one node is even easier to code than Data Parallelism with Ray.SGD.
+Similarly to the Experiment Parallelism approach presented in Tensorflow, we used the ray.tune library for experiment execution and hyperparameter tuning at any scale. Given an object *trainable* and the number of *samples* (experiments) that we want to make, the function **tune.run** executes the hyperparameter tuning. This function manages the experiment and provides many features such as logging, checkpointing, and early stopping. As happens in Data Parallelism, in a multinode environment we have to deal with more complex ray initializations, so the bash script gets harder to deal with ([Multi-node Ray Cluster](#multi-node-ray-cluster)). 
 
 ##### Usage:
 First, a configuration JSON file must be defined to execute the script. This configuration file requires the following parameters:
@@ -89,38 +89,24 @@ First, a configuration JSON file must be defined to execute the script. This con
 
 - epochs
   > (int) Number of epochs each model will train for.
-
 - verbose
   >(int) Verbose.
-
 - nodes
   >  (int) Number of nodes.
-
-
 - gpus
   > (int) Number of GPUs per node.
-
 - batch_size
   > (int) Batch size handled by each replica, i.e. GPU.
-
 - num_workers
   > (int) Number of nodes * number of GPUs per node.
-
 - use_gpu
   > (bool) Boolean that indicates if the train is going to be done using GPU resources.
-
 - multinode
-  > (bool) Boolean that indicates if the train is going to be done using GPU resources.
-
-- use_gpu
-  > (bool) Boolean that indicates if the train is going to be done using GPU resources.
-
+  > (bool) Boolean that indicates if the train is going to be done in a multinode environment.
 - cpu_per_trial
   > (int) Number of CPUs assigned to each trial.
-
 - gpu_per_trial
   > (int)  Number of GPUs assigned to each trial.
-
 - num_samples
   > (int) Number of experiments.
 
