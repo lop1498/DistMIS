@@ -38,7 +38,7 @@
 
 ## Parallelism Modes
 
-Additionally to the Tensorflow based open implementation of the Data and Experiment Parallelism design for Supercomputing environments, focused on Deep Learning for Image Segmentation, we have also provided an extension using Pytorch. In this addendum we provide the scripts and configurations needed to replicate the experimentation that has been done.
+Additionally to the Tensorflow based open implementation of the Data and Experiment Parallelism design for Supercomputing environments, focused on Deep Learning for Image Segmentation, we have also provided an extension using Pytorch. In this addendum we provide the scripts and configurations needed to replicate the experimentation that has been done, comparing via 24 experiments the scalability of data and experiment parallelism with Pytorch.
 
 ### Data Parallelism
 
