@@ -64,7 +64,7 @@ First, a configuration JSON file must be defined to execute the script. This con
 - use_gpu
   > (bool) Boolean that indicates if the train is going to be done using GPU resources.
 
-Once the configuration file is ready, we can replicate the experimentation with one node as follows. First we initialize the ray cluster, specifying the number of gpus and cpus per gpu.
+Once the configuration file is ready, we can replicate the experimentation with one node as follows. First, we initialize the ray cluster, specifying the number of gpus and cpus per gpu.
 
 ```console
 foo@bar:~$ ray start --head --num-cpus=20 --num-gpus=2
@@ -73,7 +73,7 @@ Under the hood, TorchTrainer will create replicas of your model, each of which i
 
 ```console
 foo@bar:~$ python multiexperiment.py -g 2
-
+```
 
 If we are using **multi node**, we first need to initialize a ray cluster and then execute the script as above. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
 
