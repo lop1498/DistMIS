@@ -42,7 +42,7 @@ Additionally to the Tensorflow based open implementation of the Data and Experim
 
 ### Data Parallelism
 
-Similarly to the Tensorflow proposal, we have provided a *data parallel* script that replicates the model on each GPU and divides the data in chunks, each sent to one device. To do so, we have used Ray.SGD and the corresponding TorchTrainer object. The TorchTrainer object is a wrapper around torch.distributed.launch that automatically replicates the training components across different machines so that training can be executed in parallel. One of the main benefits of Ray.SGD is that we can scale up the number of workers seamlessly across multiple nodes without making any change to the code.
+Similarly to the Tensorflow proposal, we have provided a *data parallel* script that replicates the model on each GPU and divides the data in chunks, each sent to one device. To do so, we have used Ray.SGD and the corresponding TorchTrainer object. The **TorchTrainer** object is a wrapper around torch.distributed.launch that automatically replicates the training components across different machines so that training can be executed in parallel. One of the main benefits of Ray.SGD is that we can scale up the number of workers seamlessly across multiple nodes without making any change to the code.
 
 ##### Usage:
 First, a configuration JSON file must be defined to execute the script. This configuration file requires the following parameters:
@@ -75,7 +75,7 @@ Under the hood, TorchTrainer will create replicas of your model, each of which i
 foo@bar:~$ python multiexperiment.py -g 2
 ```
 
-If we are using **multi node**, we first need to initialize a ray cluster and ray for each node with a more complex bash script. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
+If we are using **multi node**, we first need to initialize ray with a more complex bash script. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
 
 ### Experiment Parallelism
 
