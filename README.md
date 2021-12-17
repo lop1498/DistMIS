@@ -53,15 +53,15 @@ First, a configuration JSON file must be defined to execute the script. This con
   > (int) Number of epochs each model will train for.
 - verbose:
   >(int) Number of epochs each model will train for.
-- nodes:
+- nodes
   >  (int) Number of nodes.
-- gpus:
+- gpus
   > (int) Number of GPUs per node.
-- batch_size:
+- batch_size
   > (int) Batch size handled by each replica, i.e. GPU.
-- num_workers:
+- num_workers
   > (int) Number of nodes * number of GPUs per node.
-- use_gpu:
+- use_gpu
   > (bool) Boolean that indicates if the train is going to be done using GPU resources.
 
 Once the configuration file is ready, we can replicate the experimentation with one node as follows. First we initialize the ray cluster, specifying the number of gpus and cpus per gpu.
