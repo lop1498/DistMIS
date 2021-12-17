@@ -75,23 +75,7 @@ Under the hood, TorchTrainer will create replicas of your model, each of which i
 foo@bar:~$ python multiexperiment.py -g 2
 ```
 
-If we are using **multi node**, we first need to initialize a ray cluster and then execute the script as above. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
-
-##### Examples:
-So first, let's define our config JSON file named _config.json_.
-```python
-{
-    "num_replicas": 4,
-    "batch_size_per_replica": 2,
-    "num_epochs": 20,
-    "debug": false
-}
-```
-Afterwards, we can simply call the script with our config file.
-```console
-foo@bar:~$ python exp_parallel.py --config ./config.json
-```
-
+If we are using **multi node**, we first need to initialize a ray cluster and ray for each node with a more complex bash script. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
 
 ### Experiment Parallelism
 The *exp_parallel* script is the second approach presented in the paper, given a model in tensorflow and a TFRecord dataset it performs experiment parallelism using ray.tune which manages all the low level parallelism implementaion.
