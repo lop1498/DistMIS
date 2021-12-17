@@ -36,33 +36,44 @@
 
 ## Parallelism Modes
 
+## Parallelism Modes
+
+Additionally to the Tensorflow based open implementation of the Data and Experiment Parallelism design for Supercomputing environments, focused on Deep Learning for Image Segmentation, we have also provided an extension using Pytorch. In this addendum we provide the scripts and configurations needed to replicate the experimentation that has been done.
+
 ### Data Parallelism
-The *data_parallel* script is the first approach presented in the paper, given a model in tensorflow and a TFRecord dataset it performs data parallelism. 
-Data parallelism consists in, given n GPUs, the model is replicated n times and each replica is sent to a GPU. After that, the data is split into n chunks, i.e. the batch size is diveded by n, these chunks are distributed across the GPUs, where each chunk is assigned to a GPU. If we are training m models and m >= n, then we proceed sequentially for each model. Since we are using more than 1 GPU we are speeding-up the training of each model, and therefore, the m models.
-Our cluster has 4 GPUs per node, so if the number of GPUs used is less than 4, i.e. we are using only one node, tf.MirroredStrategy is used. For multi-node, i.e. >= 4 GPUs, we use ray.cluster which handles all the comunications between nodes and ray.sgd which is a wrapper around tf.MultiWorkerMirroredStrategy.
-Both tf.MirroredStrategy and tf.MultiWorkerMirroredStrategy are built-in functions from tensorflow distributed API.
+
+Similarly to the Tensorflow proposal, we have provided a *data parallel* script that replicates the model on each GPU and divides the data in chunks, each sent to one device. To do so, we have used Ray.SGD and the corresponding TorchTrainer object. The TorchTrainer object is a wrapper around torch.distributed.launch that automatically replicates the training components across different machines so that training can be executed in parallel. One of the main benefits of Ray.SGD is that we can scale up the number of workers seamlessly across multiple nodes without making any change to the code.
 
 ##### Usage:
-First of all a configuration JSON file is required to execute the script. This configuration file has some parameters which are required shown below:
+First, a configuration JSON file must be defined to execute the script. This configuration file requires the following parameters:
 
-- num_replicas
-  > (int) Number of GPUs to train each model. The model will be replicated this number of times.
-- batch_size_per_replica
-  > (int) Batch size handled by each replica, i.e. GPU. In data parallelism the total_batch_size is batch_size_per_replica * num_replicas.
-- num_epochs:
+- lr
+  > (int) Hyperparameter that defines the step size at each iteration while moving toward a minimum of a loss function.
+- epochs
+  > (int) Number of epochs each model will train for.
+- verbose:
   >(int) Number of epochs each model will train for.
-- debug:
-  > (bool) Mode debug. If true, no tensorboard files will be saved and the training verbosity is set for every step. Otherwise the training verbosity is set for epoch and the tensorboard files will be saved.
+- nodes:
+  >  (int) Number of nodes.
+- gpus:
+  > (int) Number of GPUs per node.
+- batch_size:
+  > (int) Batch size handled by each replica, i.e. GPU.
+- num_workers:
+  > (int) Number of nodes * number of GPUs per node.
+- use_gpu:
+  > (bool) Boolean that indicates if the train is going to be done using GPU resources.
 
-Once the configuration file is ready, if we are using a **single node** we can just call the script.
+Once the configuration file is ready, we can replicate the experimentation with one node as follows. First we initialize the ray cluster, specifying the number of gpus and cpus per gpu.
+
 ```console
-foo@bar:~$ python data_parallel.py --help
-usage: data_parallel.py [-h] --config CONFIG
-
-optional arguments:
-  -h, --help       Show this help message and exit
-  --config CONFIG  Path: Json file configuration
+foo@bar:~$ ray start --head --num-cpus=20 --num-gpus=2
 ```
+Under the hood, TorchTrainer will create replicas of your model, each of which is managed by a Ray actor connected to the Ray cluster. Thus, we can now execute the training script, defining with flag g the number of gpus.
+
+```console
+foo@bar:~$ python multiexperiment.py -g 2
+
 
 If we are using **multi node**, we first need to initialize a ray cluster and then execute the script as above. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
 
