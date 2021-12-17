@@ -78,56 +78,66 @@ foo@bar:~$ python multiexperiment.py -g 2
 If we are using **multi node**, we first need to initialize a ray cluster and ray for each node with a more complex bash script. Please refer to the section [Multi-node Ray Cluster](#multi-node-ray-cluster).
 
 ### Experiment Parallelism
-The *exp_parallel* script is the second approach presented in the paper, given a model in tensorflow and a TFRecord dataset it performs experiment parallelism using ray.tune which manages all the low level parallelism implementaion.
-Experiment parallelism consists in, given n GPUs, m models and m >= n, assigning a model to each GPU available. Hence, we are training n models at the same time, speeding-up the computations of all the m models.
-As mentioned above our cluster has 4 GPU per node, so if the number of GPUs used is less than 4, i.e. we are using only one node, ray.tune is used. For multi-node, i.e. >= 4 GPUs, we use ray.cluster which handles all the comunications between nodes and ray.tune.
+
+Similarly to the Experiment Parallelism approach presented in Tensorflow, we used the ray.tune library for experiment execution and hyperparameter tuning at any scale. Given an object *trainable* and the number of samples (experiments) that we want to make, the ray function tune.run executes the hyperparameter tuning. This function manages the experiment and provides many features such as logging, checkpointing, and early stopping. As happens in Data Parallelism, in a multinode environment we have to deal with ray initializations for each node and the Ray cluster, so the bash script gets more complex (Multi-node Ray Cluster](#multi-node-ray-cluster)). However, Experiment Parallelism with Ray.tune in one node is even easier than Data Parallelism with Ray.SGD.
 
 ##### Usage:
-First of all a configuration JSON file is required to execute the script. This configuration file has some parameters which are required shown below:
+First, a configuration JSON file must be defined to execute the script. This configuration file requires the following parameters:
 
-- batch_size_per_replica       
-  > (int) Batch size handled by each replica, i.e. GPU. The total_batch_size is batch_size_per_replica * num_replicas. Since in experiment parallelism we are not applying data parallelism and we train each model with a GPU, num_replicas = 1 and total_batch_size = batch_size_per_replica.
-- num_epochs:
-  >(int) Number of epochs each model will train for.
-- debug:
-  > (bool) Mode debug. If true, no tensorboard files will be saved and the training verbosity is set for every step. Otherwise the training verbosity is set for epoch and the tensorboard files will be saved.
+- lr
+  > (int) Hyperparameter that defines the step size at each iteration while moving toward a minimum of a loss function.
 
-In order to execute the script first we need to start a ray.cluster with the required resources, i.e. we want to use NUM_GPUS and NUM_CPUS. If we are using a **single node** then we can type the following command. If we are using **multi-node**, please ignore this command and refer to the to the section [Multi-node ray cluster](#multi-node-ray-cluster).
-```console
-foo@bar:~$ ray start --head --num-cpus=NUM_CPUS --num-gpus=NUM_GPUS
+- epochs
+  > (int) Number of epochs each model will train for.
+
+- verbose
+  >(int) Verbose.
+
+- nodes
+  >  (int) Number of nodes.
+
+
+- gpus
+  > (int) Number of GPUs per node.
+
+- batch_size
+  > (int) Batch size handled by each replica, i.e. GPU.
+
+- num_workers
+  > (int) Number of nodes * number of GPUs per node.
+
+- use_gpu
+  > (bool) Boolean that indicates if the train is going to be done using GPU resources.
+
+- multinode
+  > (bool) Boolean that indicates if the train is going to be done using GPU resources.
+
+- use_gpu
+  > (bool) Boolean that indicates if the train is going to be done using GPU resources.
+
+- cpu_per_trial
+  > (int) Number of CPUs assigned to each trial.
+
+- gpu_per_trial
+  > (int)  Number of GPUs assigned to each trial.
+
+- num_samples
+  > (int) Number of experiments.
+
+In order to execute the experiment parallelism script we first need to start a ray.cluster with the required resources. If we are using a **single node** then we can type the following command with the given cpus and gpus.
+
+.```console
+ray start --head --num-cpus=20 --num-gpus=2
 ```
 Once the ray cluster is started, we can call our script with our configuration json file.
-```console
-foo@bar:~$ python exp_parallel.py --help
-usage: exp_parallel.py [-h] --config CONFIG
 
-optional arguments:
-  -h, --help       Show this help message and exit
-  --config CONFIG  Path: Json file configuration
+```console
+python train.py -c ../config/2gpu/config.json
 ```
-It is a well practice to shutdown the ray cluster when the work is done.
+It is a good practice to shutdown the ray cluster when the work is done.
+
 ```console
 foo@bar:~$ ray stop
-```
-
-
-##### Examples:
-First we define out config as JSON file named _config.json_ and afterwards we initialize a ray cluster with 20 CPUs and 2 GPUs.
-```python
-{
-    "batch_size_per_replica": 2,
-    "num_epochs": 20,
-    "debug": false
-}
-```
-```console
-foo@bar:~$ ray start --head --num-cpus=20 --num-gpus=2
-```
-Finally we can call the script with our config file.
-```console
-foo@bar:~$ python exp_parallel.py --config ./config.json
-```
-
 
 ### Multi-node Ray Cluster
 In our case we are using a cluster with 4 GPUs per node, so given n GPUs for n >= 4, we are using multi-node.
